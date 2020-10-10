@@ -53,6 +53,8 @@ const removeConfig = (key) => {
   fs.writeFileSync(configPath, stringify(config));
 };
 
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 module.exports = {
   parseCookie,
   request,
@@ -62,4 +64,5 @@ module.exports = {
   setConfig,
   removeConfig,
   stringify,
+  delay,
 };

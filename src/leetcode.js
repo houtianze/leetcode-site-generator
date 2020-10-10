@@ -97,11 +97,12 @@ const createRequest = async () => {
   });
 };
 
-const getAllACQuestions = async () => {
+const getAllQuestions = async () => {
   const gqlRequest = await createGqlRequest();
   const spinner = ora('Fetching all questions...').start();
   const json = await gqlRequest(`{
     allQuestions{
+      questionId
       title
       titleSlug
       status
@@ -109,12 +110,17 @@ const getAllACQuestions = async () => {
     }
   }`);
   spinner.stop();
+  return json.allQuestions || [];
+};
+
+const getAllACQuestions = async () => {
+  const allQuestions = await getAllQuestions();
   const filterAcQuestions = (questions = []) => questions.filter(({
     status,
   }) => status === 'ac');
-  const questions = json.allQuestions || [];
-  return filterAcQuestions(questions);
+  return filterAcQuestions(allQuestions);
 };
+
 const acCodeQuery = (questionSlug) => {
   const query = `{
     submissionList(offset:0,limit:10, questionSlug: "${questionSlug}"){
@@ -129,6 +135,224 @@ const acCodeQuery = (questionSlug) => {
   }`;
   return query;
 };
+
+const questionDetailQuery = (titleSlug) => {
+  const query = `{
+    question(titleSlug: "${titleSlug}") {
+      questionId
+      questionFrontendId
+      boundTopicId
+      title
+      titleSlug
+      content
+      translatedTitle
+      translatedContent
+      isPaidOnly
+      difficulty
+      likes
+      dislikes
+      isLiked
+      similarQuestions
+      contributors {
+        username
+        profileUrl
+        avatarUrl
+        __typename
+      }
+      topicTags {
+        name
+        slug
+        translatedName
+        __typename
+      }
+      companyTagStats
+      codeSnippets {
+        lang
+        langSlug
+        code
+        __typename
+      }
+      stats
+      hints
+      solution {
+        id
+        content
+        contentTypeId
+        canSeeDetail
+        paidOnly
+        rating {
+          id
+          count
+          average
+          userRating {
+            score
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      status
+      sampleTestCase
+      metaData
+      judgerAvailable
+      judgeType
+      mysqlSchemas
+      enableRunCode
+      enableTestMode
+      enableDebugger
+      envInfo
+      libraryUrl
+      adminUrl
+      __typename
+    }
+  }
+  `;
+  return query;
+};
+
+const questionTopicsListQuery = (questionId) => {
+  const query = `{
+    questionTopicsList(questionId: ${questionId}, orderBy: "most_votes", skip: 0, query: "", first: 15, tags: []) {
+      ...TopicsList
+      __typename
+    }
+  }
+
+  fragment TopicsList on TopicConnection {
+    totalNum
+    edges {
+      node {
+        id
+        title
+        commentCount
+        viewCount
+        pinned
+        tags {
+          name
+          slug
+          __typename
+        }
+        post {
+          id
+          voteCount
+          creationDate
+          isHidden
+          author {
+            username
+            isActive
+            profile {
+              userSlug
+              userAvatar
+              __typename
+            }
+            __typename
+          }
+          status
+          coinRewards {
+            ...CoinReward
+            __typename
+          }
+          __typename
+        }
+        lastComment {
+          id
+          post {
+            id
+            author {
+              isActive
+              username
+              profile {
+                userSlug
+                __typename
+              }
+              __typename
+            }
+            peek
+            creationDate
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      cursor
+      __typename
+    }
+    __typename
+  }
+
+  fragment CoinReward on ScoreNode {
+    id
+    score
+    description
+    date
+    __typename
+  }
+  `;
+  return query;
+};
+
+const topicQuery = (topicId) => {
+  const query = `{
+    topic(id: ${topicId}) {
+      id
+      viewCount
+      topLevelCommentCount
+      subscribed
+      title
+      pinned
+      tags
+      hideFromTrending
+      post {
+        ...DiscussPost
+        __typename
+      }
+      __typename
+    }
+  }
+
+  fragment DiscussPost on PostNode {
+    id
+    voteCount
+    voteStatus
+    content
+    updationDate
+    creationDate
+    status
+    isHidden
+    coinRewards {
+      ...CoinReward
+      __typename
+    }
+    author {
+      isDiscussAdmin
+      isDiscussStaff
+      username
+      profile {
+        userAvatar
+        reputation
+        userSlug
+        __typename
+      }
+      isActive
+      __typename
+    }
+    authorIsModerator
+    isOwnPost
+    __typename
+  }
+
+  fragment CoinReward on ScoreNode {
+    id
+    score
+    description
+    date
+    __typename
+  }`;
+  return query;
+}
+
 const getSubmissionCode = async ({ url, id } = {}, isUS = true) => {
   if (isUS) {
     const submissionUrl = nodeUrl.resolve(baseUrl, url);
@@ -169,9 +393,31 @@ const getAcCode = async (questionSlug) => {
   return null;
 };
 
+const getQuestionDetail = async (titleSlug) => {
+  const qglRequest = await createGqlRequest();
+  const json = await qglRequest(questionDetailQuery(titleSlug));
+  return json.question;
+};
+
+const getQuestionTopicsList = async (questionId) => {
+  const qglRequest = await createGqlRequest();
+  const json = await qglRequest(questionTopicsListQuery(questionId));
+  return json.questionTopicsList;
+};
+
+const getTopicDetail = async (topicId) => {
+  const qglRequest = await createGqlRequest();
+  const json = await qglRequest(topicQuery(topicId));
+  return json.topic;
+};
+
 module.exports = {
   login,
+  getAllQuestions,
   getAllACQuestions,
   getAcCode,
+  getQuestionDetail,
+  getQuestionTopicsList,
+  getTopicDetail,
   getCookie,
 };

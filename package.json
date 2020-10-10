@@ -5,6 +5,9 @@
   "bin": {
     "leetcode-site": "./src/cli.js"
   },
+  "scripts": {
+    "cli": "node ./src/cli.js"
+  },
   "repository": "https://github.com/beizhedenglong/leetcode-site-generator.git",
   "author": "Victor Wang <wang_shaojie@icloud.com>",
   "license": "MIT",

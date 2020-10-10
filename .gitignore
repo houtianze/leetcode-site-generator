@@ -64,3 +64,6 @@ docs
 
 problems.json
 .DS_Store
+
+# Generated site direcotry
+leetcode-site-base/
