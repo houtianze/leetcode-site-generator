@@ -14,6 +14,8 @@ const {
   setConfig,
 } = require('./utils');
 
+const { DiscussionTopicCounts } = require('./const');
+
 puppeteer.use(StealthPlugin());
 
 
@@ -213,7 +215,7 @@ const questionDetailQuery = (titleSlug) => {
 
 const questionTopicsListQuery = (questionId) => {
   const query = `{
-    questionTopicsList(questionId: ${questionId}, orderBy: "most_votes", skip: 0, query: "", first: 15, tags: []) {
+    questionTopicsList(questionId: "${questionId}", orderBy: most_votes, skip: 0, query: "", first: ${DiscussionTopicCounts}, tags: []) {
       ...TopicsList
       __typename
     }
@@ -351,7 +353,7 @@ const topicQuery = (topicId) => {
     __typename
   }`;
   return query;
-}
+};
 
 const getSubmissionCode = async ({ url, id } = {}, isUS = true) => {
   if (isUS) {
