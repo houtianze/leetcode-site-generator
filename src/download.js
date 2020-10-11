@@ -87,9 +87,12 @@ const download = async (command) => {
     }));
     if (!command.all) {
       questionsToDownload = questionsToDownload.filter(
-        slug => !(slug in discussions)
-          || !discussions[slug].topics
-          || discussions[slug].topics.length < DiscussionTopicCounts,
+        (question) => {
+          const slug = question.titleSlug;
+          return !(slug in discussions)
+            || !discussions[slug].topics
+            || discussions[slug].topics.length < DiscussionTopicCounts;
+        },
       );
     }
 
@@ -103,8 +106,12 @@ const download = async (command) => {
       discussions[question.titleSlug] = questionDiscussions;
 
       const downloadTopic = async (topic) => {
-        const topicDetail = await getTopicDetail(topic.node.id);
-        questionDiscussions.topics.push(topicDetail);
+        try {
+          const topicDetail = await getTopicDetail(topic.node.id);
+          questionDiscussions.topics.push(topicDetail);
+        } catch (error) {
+          console.error(error);
+        }
       };
 
       const topics = await getQuestionTopicsList(question.questionId);
@@ -132,7 +139,8 @@ const download = async (command) => {
       }
     } catch (error) {
       console.error(error);
-      process.exit(-1);
+      // we don't abort if any download fails
+      // process.exit(-1);
     }
   };
 
