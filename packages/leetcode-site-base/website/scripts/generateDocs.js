@@ -1,7 +1,48 @@
 const fs = require('fs');
 const path = require('path');
 const problems = require('../problems.json');
+const discussions = require('../discussions.json');
 const sidebars = require('../sidebars.json');
+
+const convertTags = tags => tags.map(tag => `- ${tag.name} (${tag.slug})`).join('\n');
+
+const convertCompanyTagStats = (tagStats) => {
+  const tags = [];
+  Object.keys(tagStats).forEach((tagIndex) => {
+    tagStats[tagIndex].forEach((tag) => {
+      tags.push(`- ${tag.name} - ${tag.timesEncountered} (taggedByAdmin: ${tag.taggedByAdmin})`);
+    });
+  });
+
+  return tags.join('\n');
+};
+
+const epochToLocalDate = (epoch) => {
+  const date = new Date(0);
+  date.setUTCSeconds(epoch);
+  return date;
+};
+
+const getDiscussions = (slug) => {
+  const { topics } = discussions[slug];
+  const posts = topics.map((topic) => {
+    const str = `### ${topic.title}
+- Author: ${topic.post.author.username}
+- Creation Date: ${epochToLocalDate(topic.post.creationDate)}
+- Update Date: ${epochToLocalDate(topic.post.updationDate)}
+
+<p>
+${topic.post.content
+    .replace(/\\n/g, '\n')
+    .replace(/\\t/g, '\t')
+    .replace(/\\\\/g, '\\')}
+</p>
+`;
+    return str;
+  });
+
+  return posts.join('\n\n');
+};
 
 const toDoc = ({
   title,
@@ -9,6 +50,9 @@ const toDoc = ({
   lang = '',
   code,
   content,
+  solution,
+  topicTags,
+  companyTagStats,
 }) => {
   const str = (
     // eslint-disable-next-line
@@ -22,13 +66,28 @@ sidebar_label: ${title}
 ${content}
 </div>
 
-## Solution(${lang})
-\`\`\`${lang}
-${code}
-\`\`\``
+## Tags
+${convertTags(topicTags)}
+
+## Companies
+${convertCompanyTagStats(JSON.parse(companyTagStats))}
+
+## Official Solution
+${solution ? solution.content : 'N.A.'}
+
+## Accepted Submission (${lang || 'N.A.'})
+\`\`\`${lang || ''}
+${code || 'N.A.'}
+\`\`\`
+
+## Top Discussions
+${getDiscussions(titleSlug)}
+
+`
   );
   return str;
 };
+
 const indexPage = indexDoc => (
   `<!DOCTYPE HTML>
     <html lang="en-US">
