@@ -126,7 +126,7 @@ const download = async (command) => {
         await downloadDiscussions(question);
         fs.writeFileSync(discussionsPath, stringify(discussions));
         discussionsDownloaded += 1;
-        spinner.text = `Discussions: ${discussionsDownloaded}/${questionsToDownload.length} + ${discussionsDownloaded}: [${question.titleSlug}] has been downloaded.`;
+        spinner.text = `Discussions: ${discussionsDownloaded}/${questionsToDownload.length + discussionsDownloaded}: [${question.titleSlug}] has been downloaded.`;
         // eslint-disable-next-line no-await-in-loop
         await waitForAWhile();
       }
