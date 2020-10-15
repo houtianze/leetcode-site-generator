@@ -1,0 +1,33 @@
+<!-- <nav>
+  <ul>
+    <li><a href="#">ham</a></li>
+    <li><a href="#">hamster</a></li>
+    <li><a href="#">ham</a></li>
+  </ul>
+</nav> -->
+
+<!--
+<div>
+  {%- if site.posts.size > 0 -%}
+    {%- for post in site.posts -%}
+    <a class="post-link" href="{{ post.url | relative_url }}">
+      {{ post.title | escape }}
+    </a>
+    {%- endfor -%}
+  {%- endif -%}
+</div>
+-->
+
+<nav>
+  {%- if site.docs.size > 0 -%}
+  <ul>
+    {%- for doc in site.docs -%}
+    <li>
+      <a class="doc-link" href="{{ doc.url | relative_url }}">
+        {{ doc.title | escape }}
+      </a>
+    </li>
+    {%- endfor -%}
+  </ul>
+  {%- endif -%}
+</nav>

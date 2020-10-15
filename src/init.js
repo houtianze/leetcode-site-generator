@@ -4,14 +4,14 @@ const ora = require('ora');
 const fs = require('fs');
 
 
-module.exports = () => {
-  const destination = 'leetcode-site-base';
-  if (fs.existsSync(destination)) {
-    console.error('Already has leetcode-site-base directory!');
+module.exports = (command) => {
+  const destination = 'leetcode-crawled';
+  if (!command.force && fs.existsSync(destination)) {
+    console.error(`Already has ${destination} directory!`);
     return;
   }
-  const websiteDirPath = path.join(__dirname, '..', 'packages', 'leetcode-site-base');
-  const spinner = ora('Copying files into leetcode-site-base...').start();
-  shell.cp('-r', websiteDirPath, destination);
+  const websiteDirPath = path.join(__dirname, '..', 'packages', 'hugo-site');
+  const spinner = ora(`Copying files into ${destination}...`).start();
+  shell.cp('-R', websiteDirPath, destination);
   spinner.stop();
 };

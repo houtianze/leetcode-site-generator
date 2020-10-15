@@ -1,0 +1,35 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+---
+
+@import "minima";
+
+.flex-box {
+    display: flex;
+    flex-flow: row;
+}
+
+nav {
+    margin-right: 0.5em;
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 16em;
+    background-color: #eee;
+    overflow: auto;
+
+    li {
+      a {
+        display: block;
+        color: black;
+        padding: 8px 16px;
+        text-decoration: none;
+      }
+      a:hover {
+        background-color: green;
+        color: white;
+      }
+    }
+  }
+}

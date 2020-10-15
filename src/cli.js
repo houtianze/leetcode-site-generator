@@ -17,6 +17,7 @@ commander
 
 commander
   .command('init')
+  .option('-f, --force', 'Overwrite the the leetcode site destination directory file.')
   .description('Generate your personal LeetCode website.')
   .action(init);
 
