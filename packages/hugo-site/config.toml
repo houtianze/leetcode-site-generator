@@ -1,4 +1,4 @@
-baseURL = "http://example.org/"
+baseURL = "https://ibic.gitlab.io/leetcode-crawled/"
 languageCode = "en-us"
 title = "LeetCode Problems"
 theme = "book"
