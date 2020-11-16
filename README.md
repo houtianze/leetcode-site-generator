@@ -5,8 +5,12 @@ Generate your personal LeetCode website with one command!
 
 - For this fork, it uses `hugo` static site generator to generate the site
   - `hugo server` to preview locally
-  - Push to `gitlab` to automatically trigger `gitlab ci` to generate `gitlab page`
-  - Refer to `.gitlab-ci.yml` for details
+
+## Publishing to GitLab
+  - Copy `packages/hugo-site` to a temporary directroy
+  - `git init` and add `gitlab` repo
+  - `git push` to automatically trigger `gitlab ci` to generate `gitlab page`
+  - Refer to `pacakges/hugo-site/.gitlab-ci.yml` for details
 
 ## Example Website
 [leetcode-solutions](https://beizhedenglong.github.io/leetcode-solutions/)
